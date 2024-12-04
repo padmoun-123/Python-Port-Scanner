@@ -1,0 +1,28 @@
+import socket
+from concurrent.futures import ThreadPoolExecutor
+
+def scan_port(ip, port):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            if s.connect_ex((ip, port)) == 0:
+                try:
+                    service = socket.getservbyport(port)
+                except:
+                    service = "Unknown Service"
+                print(f"[+] Open Port: {port} ({service})")
+    except:
+        pass
+
+def main():
+    print("Python Port Scanner")
+    ip = input("Enter target IP: ")
+    start_port = int(input("Enter start port: "))
+    end_port = int(input("Enter end port: "))
+
+    with ThreadPoolExecutor(max_workers=100) as executor:
+        for port in range(start_port, end_port + 1):
+            executor.submit(scan_port, ip, port)
+
+if __name__ == "__main__":
+    main()
